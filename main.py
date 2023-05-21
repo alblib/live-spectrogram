@@ -28,7 +28,8 @@ def update_spectrogram(indata, frames, time, status):
     n = np.array(range(2048)) * 2 * math.pi / 2048
     window = 0.35875 - 0.48829 * np.cos(n) + 0.14128 * np.cos(2 * n) - 0.01168 * np.cos(3 * n)
     windowed_buffer = np.multiply(buffer, window)
-    fft_line = 20 * np.log10(np.abs(np.fft.fft(windowed_buffer)))[:256]
+    preemphasized_buffer = windowed_buffer - 0.9 * np.concatenate(([0], windowed_buffer[1:]))
+    fft_line = 20 * np.log10(np.abs(np.fft.fft(preemphasized_buffer)))[:256]
     fft_map = np.concatenate((fft_map[1:], [fft_line]))
 
     # plt.clear()
